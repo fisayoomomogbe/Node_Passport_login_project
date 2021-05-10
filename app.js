@@ -8,7 +8,11 @@ const expressLayouts = require("express-ejs-layouts");
 const router = require("./routes/index");
 const userRouter = require("./routes/users");
 const User = require("./models/User");
+const passport = require("passport");
 const app = express();
+
+// passport config
+require("./config/passport")(passport);
 
 // configuration for EJS
 app.use(expressLayouts);
@@ -23,12 +27,15 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash());
+
 // Global variables
 app.use((req, res, next) => {
   res.locals.success_msg = req.flash("success_msg");
   res.locals.error_msg = req.flash("error_msg");
-  res.locals.error_msg = req.flash("error_msg");
+  res.locals.error = req.flash("error");
   next();
 });
 
