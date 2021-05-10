@@ -2,6 +2,7 @@ const express = require("express");
 const userRouter = express.Router();
 const bcrypt = require("bcryptjs");
 const saltRounds = 10;
+const passport = require("passport");
 
 // User model
 const User = require("../models/User");
@@ -9,7 +10,7 @@ const User = require("../models/User");
 // Login router
 userRouter.get("/login", (req, res) => res.render("login"));
 
-// Register router
+// Sign up router
 
 userRouter.get("/signup", (req, res) => res.render("signup"));
 
@@ -78,6 +79,22 @@ userRouter.post("/signup", (req, res) => {
       }
     });
   }
+});
+
+// Login Handle
+userRouter.post("/login", (req, res, next) => {
+  passport.authenticate("local", {
+    successRedirect: "/dashboard",
+    failureRedirect: "/users/login",
+    failureFlash: true,
+  })(req, res, next);
+});
+
+// Logout Handle
+userRouter.get("/logout", (req, res) => {
+  req.logout();
+  req.flash("success_msg", "You are logged out");
+  res.redirect("/users/login");
 });
 
 module.exports = userRouter;
